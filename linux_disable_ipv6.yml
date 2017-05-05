@@ -1,0 +1,34 @@
+---
+
+- hosts: test
+
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Disable IPv6 on all interfaces
+    sysctl:
+      name: net.ipv6.conf.all.disable_ipv6
+      value: 1
+
+  - name: To force sshd to bind only on IPv4 address
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      line: 'AddressFamily inet'
+    notify: 
+    - Restart sshd server
+
+  - name: Comment out all lines which contain IPv6 hosts
+    replace:
+      path: /etc/hosts
+      regexp: '(.*::\d+\s+.*)'
+      replace: '#\1'
+
+  handlers:
+    - name: Restart sshd server
+      service:
+        name: ssh
+        state: reloaded
+
+#Run playbook: ansible-playbook linux_disable_ipv6.yml --ask-become-pass
