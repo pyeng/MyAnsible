@@ -1,0 +1,21 @@
+---
+
+- hosts: pvesrv
+
+  tasks:
+
+    - name: Create VM
+      proxmox_kvm:
+        api_user    : root@pam
+        api_password: pass
+        api_host    : pvesrv
+        node        : pvesrv
+        name        : test
+        sockets     : 1
+        cores       : 1
+        memory      : 256
+        description : test VM
+        format      : qcow2
+        net         : '{"net0":"virtio,bridge=vmbrXXX"}'
+        #virtio      : '{"virtio0":"VMs_LVM:10", "virtio1":"VMs:2,format=qcow2", "virtio2":"VMs:5,format=raw"}'
+
